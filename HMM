@@ -1,0 +1,45 @@
+// Define the website URL and recipient email
+const websiteUrl = "https://hoangmaimobile.vn/";
+const emailTo = "khanhhoa2002.hh@gmail.com";
+
+// Function to check website status
+function checkWebsiteStatus() {
+  try {
+    const response = UrlFetchApp.fetch(websiteUrl);
+    if (response.getResponseCode() === 200) {
+      console.log("Website hoạt động bình thường");
+    } else {
+      const message = `Website có vấn đền: Lỗi code: ${response.getResponseCode()}`;
+      sendWebsiteDownEmail(message);
+    }
+  } catch (error) {
+    const message = `Website is unreachable due to connection error: ${error}`;
+    sendWebsiteDownEmail(message);
+  }
+}
+
+// Function to send email notification
+function sendWebsiteDownEmail(message) {
+  const subject = "[Website Status Alert] " + websiteUrl;
+  const body = message;
+
+  const mailOptions = {
+    to: emailTo,
+    subject: subject,
+    htmlBody: body
+  };
+
+  MailApp.sendEmail(mailOptions);
+}
+
+// Function to set up the daily trigger
+function setup() {
+  // Create a daily trigger at 00:00 (midnight)
+  ScriptApp.newTrigger("checkWebsiteStatus")
+    .timeBased()
+    .everyMinutes(1) // Run every 24 hours (simulates daily)
+    .create();
+}
+
+// Run the setup function to create the trigger
+setup();
